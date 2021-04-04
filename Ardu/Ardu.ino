@@ -48,8 +48,8 @@ myArdu::Clock rotationClock(500);
 // the setup function runs once when you press reset or power the board
 void setup() {
 	//Setup pc communication
-	Serial.begin(9600);
-	while (!Serial);
+	/*Serial.begin(9600);
+	while (!Serial);*/
 
 	//Prepare pin for file reading
 	pinMode(53, OUTPUT);
@@ -63,8 +63,6 @@ void setup() {
 
   //Setup optoins for menu, and wait for choise
   menu.setup(myArdu::getOptions(DISPLAY_SIZE));
-  /*display.printText(0, 0, menu.getText());
-  display.printCheck(menu.getSelected());*/
 
   while(!menu.newFile()){
     if (rotationClock.checkpoint()){
