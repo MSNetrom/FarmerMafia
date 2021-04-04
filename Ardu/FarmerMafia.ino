@@ -10,9 +10,8 @@
 #include "mygps_m9n_uart2.h"
 #include "farm_rele_control.h"
 #include "oled_i2c_dsd.h"
-
-//Create file object
-File myFile;
+#include "tekst_menu.h"
+#include "file_lister.h"
 
 //Creat a polygon holder, to hold a fiel
 myArdu::PolyHolder fieldHolder;
@@ -39,15 +38,17 @@ myArdu::LevelControl levelControlSeed(UP_PIN_SEED, MID_PIN_SEED, DOWN_PIN_SEED, 
 myArdu::LevelControl levelControlGjod(UP_PIN_GJOD, MID_PIN_GJOD, DOWN_PIN_GJOD, CLICK_TIME, WAIT_TIME);
 
 //Create display
+#define DISPLAY_SIZE 5
 myArdu::OledDisp display;
 
 // Test tekst
-myArdu::TextRotator texter("Huset");
+myArdu::Menu menu(2, 3, 4);
+myArdu::Clock rotationClock(500);
 
 // the setup function runs once when you press reset or power the board
 void setup() {
 	//Setup pc communication
-	Serial.begin(115200);
+	Serial.begin(9600);
 	while (!Serial);
 
 	//Prepare pin for file reading
@@ -57,8 +58,29 @@ void setup() {
 		while (true);
 	}
 
+  //Setup display
+  display.setup();
+
+  //Setup optoins for menu, and wait for choise
+  menu.setup(myArdu::getOptions(DISPLAY_SIZE));
+  /*display.printText(0, 0, menu.getText());
+  display.printCheck(menu.getSelected());*/
+
+  while(!menu.newFile()){
+    if (rotationClock.checkpoint()){
+      long tiger = millis();
+      menu.rotate();
+      display.printText(0, 0, menu.getText());
+    }
+    if (menu.newChoise()) {
+      display.printText(0, 0, menu.getText()); 
+      display.printCheck(menu.getSelected());
+    }
+  }
+
 	//Open file
-	myFile = SD.open("huset.sve"); //plassen.sve
+	File myFile = SD.open(menu.getFileName()); //plassen.sve
+  display.printText(0, 0, menu.getText()); 
 
 	//Check if file opened successfully
 	if (!myFile) {
@@ -77,17 +99,12 @@ void setup() {
 	//Setup rele control
 	levelControlSeed.setup();
   levelControlGjod.setup();
-
-	//Setup display
-	display.setup();
 }
 
 // the loop function runs over and over again until power down or reset
 void loop() {
 	//Check if we should look for GPS data
 	if (myGps.should_look()) {
-    display.printText(texter.getStr(4));
-    texter.rotate();
 		//Get next gps data (wait for it)
 		const myArdu::NAV_PVT& pvt = myGps.get_next_pvt();
 
@@ -96,14 +113,12 @@ void loop() {
 		pos.x = pvt.lon / 10;
 		pos.y = pvt.lat / 10;
 
-    //Serial.print(pos.x); Serial.print(" "); Serial.println(pos.y);
-
 		//F� verdi for omr�det vi er i
 		char state = fieldHolder.value(pos);
 		//127 betyr at vi ikke er innenfor definert omr�de
 		if (state == 127) {
 			//Printe at vi er utenfor omr�det
-			//display.printText("? ");
+			display.printInsideStatus('?');
 		}
 		else {
 			//Skifte til ny verdi
@@ -114,12 +129,32 @@ void loop() {
       levelControlGjod.loop();
 			//Print til skjerm
 			display.printState(state);
+      display.printInsideStatus(' ');
 		}
-		if (!myGps.gnssFixOk()) {
-			//display.printText("??");
+		if (myGps.gnssFixOk()) {
+			display.printGpsStatus("OK");
 		}
+    else{
+      display.printGpsStatus("!!");
+    }
 	}
 	//Kj�r levelcontrol loop for updates
 	levelControlSeed.loop();
   levelControlGjod.loop();
+  if (rotationClock.checkpoint()){
+    menu.rotate();
+    display.printText(0, 0, menu.getText());
+  }
+  if (menu.newChoise()) { 
+    if (menu.newFile()){
+      File myFile = SD.open(menu.getFileName());
+      fieldHolder = myArdu::PolyHolder{};
+      fieldHolder = myArdu::read_field(myFile);
+      myFile.close();
+      display.resetState();
+      display.printInsideStatus(' ');
+    }
+    display.printText(0, 0, menu.getText()); 
+    display.printCheck(menu.getSelected());
+  }
 }
