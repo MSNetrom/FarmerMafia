@@ -149,8 +149,8 @@ void loop() {
       fieldHolder = myArdu::PolyHolder{};
       fieldHolder = myArdu::read_field(myFile);
       myFile.close();
-      display.resetState();
-      display.printInsideStatus(' ');
+      //display.resetState();
+      //display.printInsideStatus(' ');
     }
     display.printText(0, 0, menu.getText()); 
     display.printCheck(menu.getSelected());
