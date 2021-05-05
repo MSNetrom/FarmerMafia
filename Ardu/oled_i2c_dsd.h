@@ -127,7 +127,12 @@ namespace myArdu {
       if (data > 0) {
         u8x8.drawString(10, 4, "+");
         u8x8.setCursor(12, 4);
-      } else {
+      }
+      else if (data == 0) {
+        u8x8.drawString(10, 4, " ");
+        u8x8.setCursor(12, 4);
+      }
+      else {
         u8x8.setCursor(10, 4);
       }
       u8x8.print((int)data);

@@ -26,15 +26,15 @@ myArdu::MY_GPS_UART2 myGps(Serial3, GPS_PERIOD, GPS_LOOK_TIME);
 #define WAIT_TIME 190
 
 //Create rele control for seeds
-#define UP_PIN_SEED 22
+#define UP_PIN_SEED 24
 #define MID_PIN_SEED 23
-#define DOWN_PIN_SEED 24
+#define DOWN_PIN_SEED 22
 myArdu::LevelControl levelControlSeed(UP_PIN_SEED, MID_PIN_SEED, DOWN_PIN_SEED, CLICK_TIME, WAIT_TIME);
 
 //Create rele control for gjødning
-#define UP_PIN_GJOD 25
+#define UP_PIN_GJOD 27
 #define MID_PIN_GJOD 26
-#define DOWN_PIN_GJOD 27
+#define DOWN_PIN_GJOD 25
 myArdu::LevelControl levelControlGjod(UP_PIN_GJOD, MID_PIN_GJOD, DOWN_PIN_GJOD, CLICK_TIME, WAIT_TIME);
 
 //Create display
