@@ -2,9 +2,16 @@
 #ifndef TEKST_MENU
 #define TEKST_MENU
 
-#include "light_smarpointer.h"
+#include "light_smartpointer.h"
 #include "oled_i2c_dsd.h"
 #include "button.h"
+
+/*
+  Denne koden inneholder selve logikken i menyen. Den sørger
+  for gi ut teksten som skal skrives til menyen, og å rotere
+  på teksten. Den gir også ut filnavn for valgt fil, og har
+  noen flere funksjoner.
+*/
 
 namespace myArdu{
   class Clock{
@@ -44,6 +51,7 @@ namespace myArdu{
       }
     }
 
+    // Sjekker om i har bladd i menyen
     bool newChoise() {
       if ((millis()-300) > t){
         char i = 0;
@@ -53,7 +61,6 @@ namespace myArdu{
             curChoise = (curChoise+1)%texts.size();
           }
           else if (i == 1) {
-            //Serial.println("Hei 3");
             choise = curChoise;
           }
           else if (i == 2) {
@@ -66,6 +73,7 @@ namespace myArdu{
       return false;
     }
 
+    // Sjekker om vi har valgt ny fil
     bool newFile(){
       if (lastChoise == choise){
         return false;
@@ -74,14 +82,17 @@ namespace myArdu{
       return true;
     }
 
+    // Får teksten til relevant meny-valg
     char* getText(){
       return texts[curChoise].getStr();
     }
 
+    // Returner filnavn på valgt åker/fil
     char* getFileName(){
       return texts[curChoise].getFull();
     }
 
+    // Reuturnerer symbol, for å vise om åkeren er valgt eller ikke
     char getSelected() const {
       if (curChoise == choise) {
         return 'V';  
@@ -89,6 +100,7 @@ namespace myArdu{
       return ' ';
     }
 
+    // Rotererer den aktuelle teksten
     void rotate() {
       texts[curChoise].rotate();
     }

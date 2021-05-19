@@ -2,10 +2,22 @@
 #ifndef LIGHT_SMARTPOINTER
 #define LIGHT_SMARTPOINTER
 
+/*
+   I denne fila er det definert to datatyper som brukes andre steder i prosjektet.
+
+   shared_array-klassen lagrer en pointer til en array, av ønsket type.
+   Minne som brukes av arrayen slettes automatisk når den siste
+   kopien av sharred_array instansen slettes. Det betyr at man
+   ikke trenger å tenke på minnehåndtering.
+
+   light_sharred_vector-klassen er ment som en mini-vektor-klasse,
+   som kan lagre en array pluss lengden på arrayen.
+*/
+
 #include <stdint.h>
 
 namespace myArdu {
-    //Simple shared pointer array, <array type, tracking of length size
+    //Simple shared pointer array, <array type>
     template<class T>
     class shared_array {
     private:

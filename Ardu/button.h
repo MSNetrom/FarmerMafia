@@ -2,6 +2,10 @@
 #ifndef BUTTON_DETECT
 #define BUTTON_DETECT
 
+/*
+  Button-klassen brukes for å sjekke om det trykkes på en av meny-knappene.
+*/
+
 namespace myArdu {
     class Button {
     private:
@@ -12,6 +16,7 @@ namespace myArdu {
         void setup() {
             pinMode(pin, INPUT_PULLUP);
         }
+        // Denne funksjonen returnerer True ved nytt klikk
         bool newClick() {
             bool newState = digitalRead(pin);
             if (!newState) {

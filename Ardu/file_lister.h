@@ -3,11 +3,16 @@
 #define FIELD_LISTER
 
 #include "SD.h"
-#include "light_smarpointer.h"
+#include "light_smartpointer.h"
 #include "oled_i2c_dsd.h"
-#include "globals.h"
+
+/*
+ Kode for å få info om filer, lagret på SD-kortet.
+*/
 
 namespace myArdu{
+
+  // Returner antall filer i root-mappen av SD-kortet
   unsigned char numFiles(){
    unsigned char count = 0;
    File root = SD.open("/");
@@ -22,7 +27,8 @@ namespace myArdu{
    }
    return count;
   }
-  
+
+  // Returnerer liste med filnavn, for bruk i menyen
   light_shared_vector<TextRotator> getOptions(char dispSize){
     light_shared_vector<TextRotator> options(numFiles());
     File root = SD.open("/");
@@ -34,14 +40,9 @@ namespace myArdu{
       }
       if (!entry.isDirectory()){
         options[i] = TextRotator(entry.name(), dispSize);
-        //Serial.print("First: "); Serial.println(entry.name()[0]);
         ++i;
       }
     }
-    /*for (unsigned char i = 0; i < options.size(); ++i){
-      File entry = root.openNextFile();
-      options[i] = myArdu::TextRotator(entry.name(), dispSize);
-    }*/
     return options;
   }
 }

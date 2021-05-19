@@ -2,6 +2,19 @@
 #ifndef OLED_I2C_DSD
 #define OLED_I2C_DSD
 
+/*
+  Her har vi klassen TextRotator og OledDisp, som brukes
+  i sammenheng med menyen.
+
+  TextRotator brukes for å holde på C-style tekststringer.
+  Koden lar deg rotere på teksten, og returne en bare en bit
+  av teksten, eller hele teksten. Den brukes for å vise
+  filnavn på skjermen.
+
+  OledDisp brukes for selve skjermkommanodene av menyen,
+  og benytter u8x8-biblioteket.
+*/
+
 //https://github.com/olikraus/u8g2/wiki/u8x8reference
 //https://github.com/olikraus/u8g2/wiki/fntlist8x8
 #include <U8x8lib.h>
@@ -138,11 +151,6 @@ namespace myArdu {
       u8x8.print((int)data);
 		}
 
-    /*void resetState(){
-      u8x8.setCursor(10, 4);
-      u8x8.print(' ');
-    }*/
-
     void printCheck(char v){
       u8x8.setCursor(14, 0);
       u8x8.print(v);
@@ -159,7 +167,6 @@ namespace myArdu {
 
 		//Print tekst
 		void printText(char x, char y, char* tekst) {
-			//u8x8.clearDisplay();
 			u8x8.drawString(x, y, tekst);
 		}
 

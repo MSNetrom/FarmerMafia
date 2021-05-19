@@ -2,6 +2,23 @@
 #ifndef M9N_STRUCTS
 #define M9N_STRUCTS
 
+/*
+   Vi benytter oss av UBX-protkollen for å motta data fra GPSen.
+   (Dette er noe vi har instilt GPSen på, gjennom u-senter programmet).
+   Vi benytter oss av en Ublox m9n, fra Sparkfun. Benytter man en
+   annen GPS fra Ublox, kan denne koden funke. Det kan også hende
+   at man må sørge for at GPSen er instilt på å bruke UBX-protokollen,
+   og man kan måtte forandre på NAV_PVT structen under, da pakkene sendt
+   fra GPSen kan variere mellom ulike versjoner. Info om dette kan finnes
+   i databladet til GPSen.
+
+   Denne koden inneholder dog kun structen, som dataen fra GPSen lagres i,
+   pluss en checksum-funksjon, som brukes for å sjekke at dataen som kom
+   ikke er ødelagt.
+
+   Selve kommunikasjonen med GPSen, foregåt i "mygps_m9n_uart2.h"
+*/
+
 #include <stdint.h>
 
 namespace myArdu {
@@ -13,8 +30,8 @@ namespace myArdu {
     uint32_t UBX_PVT_FULLID = 3043098887;
 
     //https://www.u-blox.com/en/docs/UBX-19035940
-    //2 bytes f�r og etter, som ikke er del av structen
-    //4 bytes med info f�r selve payload
+    //2 bytes f�r og etter, som ikke er del av structen
+    //4 bytes med info f�r selve payload
     //92 bytes of payload
     //100 bytes total?
     struct NAV_PVT {
@@ -39,7 +56,7 @@ namespace myArdu {
         int8_t flags;                  // Fix Status Flags 
                                      //(bit 0: gnssFixOK - 1 = valid fix (i.e within DOP & accuracy masks)
                                      //(bit 1: diffSoln - 1 = differential corrections were applied)
-                                     //(bit 5) har med heading � gj�re
+                                     //(bit 5) har med heading � gj�re
         int8_t flags2;                 //Litt mer stuff
         uint8_t numSV;         // Number of satellites used in Nav Solution
 

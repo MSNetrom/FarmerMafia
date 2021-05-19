@@ -1,7 +1,13 @@
+
 /*
- Name:		ardu_fielder.ino
- Created:	1/7/2021 5:11:04 PM
- Author:	Morten
+  #### INFORMASJON ####
+
+  Dette er hovedfila, for koden som regulerer såkorn- og gjødselsmengde på såmaskinen.
+  Alle åkerfiler lagret i "root"-området på SD-kortet, vil bli lest inn i menyen, og kan
+  velges fra menyen.
+
+  Definerer også en del konstanter her, som kan forandres etter ønske.
+  
 */
 
 #include <SPI.h>
@@ -13,15 +19,15 @@
 #include "tekst_menu.h"
 #include "file_lister.h"
 
-//Creat a polygon holder, to hold a fiel
+//Creat a polygon holder, to hold data from a field
 myArdu::PolyHolder fieldHolder;
 
 //Create gps
-#define GPS_PERIOD 1000
-#define GPS_LOOK_TIME 5
+#define GPS_PERIOD 1000 // Leser hvert sekund fra GPS (må stilles inn på GPSen)
+#define GPS_LOOK_TIME 5 // Ser etter GPS-signal i 5 millisekunder
 myArdu::MY_GPS_UART2 myGps(Serial3, GPS_PERIOD, GPS_LOOK_TIME);
 
-//Constants for reles
+//Constants for relays
 #define CLICK_TIME 290
 #define WAIT_TIME 190
 
@@ -45,12 +51,8 @@ myArdu::OledDisp display;
 myArdu::Menu menu(2, 3, 4);
 myArdu::Clock rotationClock(500);
 
-// the setup function runs once when you press reset or power the board
+// The setup function runs once when you press reset or power the board
 void setup() {
-	//Setup pc communication
-	/*Serial.begin(9600);
-	while (!Serial);*/
-
 	//Prepare pin for file reading
 	pinMode(53, OUTPUT);
 
@@ -64,6 +66,7 @@ void setup() {
   //Setup optoins for menu, and wait for choise
   menu.setup(myArdu::getOptions(DISPLAY_SIZE));
 
+  //Vent på at åker skal velges
   while(!menu.newFile()){
     if (rotationClock.checkpoint()){
       long tiger = millis();
@@ -77,7 +80,7 @@ void setup() {
   }
 
 	//Open file
-	File myFile = SD.open(menu.getFileName()); //plassen.sve
+	File myFile = SD.open(menu.getFileName());
   display.printText(0, 0, menu.getText()); 
 
 	//Check if file opened successfully
@@ -102,6 +105,7 @@ void setup() {
 // the loop function runs over and over again until power down or reset
 void loop() {
 	//Check if we should look for GPS data
+  //Vi sjekker GPS om det har gått mer tid en (GPS_PERIOD - GPS_LOOK_TIME) som definert lenger opp
 	if (myGps.should_look()) {
 		//Get next gps data (wait for it)
 		const myArdu::NAV_PVT& pvt = myGps.get_next_pvt();
@@ -111,9 +115,9 @@ void loop() {
 		pos.x = pvt.lon / 10;
 		pos.y = pvt.lat / 10;
 
-		//F� verdi for omr�det vi er i
+		//Få verdi for området vi er i
 		char state = fieldHolder.value(pos);
-		//127 betyr at vi ikke er innenfor definert omr�de
+		//127 betyr at vi ikke er innenfor definert område
 		if (state == 127) {
 			//Printe at vi er utenfor omr�det
 			display.printInsideStatus('?');
@@ -122,13 +126,14 @@ void loop() {
 			//Skifte til ny verdi
 			levelControlSeed.new_level(state);
       levelControlGjod.new_level(state);
-			//Let loop start before check
+			//Let click start before display-printing
 			levelControlSeed.loop();
       levelControlGjod.loop();
 			//Print til skjerm
 			display.printState(state);
       display.printInsideStatus(' ');
 		}
+    // Printer GPS-status til skjerm
 		if (myGps.gnssFixOk()) {
 			display.printGpsStatus("OK");
 		}
@@ -136,9 +141,12 @@ void loop() {
       display.printGpsStatus("!!");
     }
 	}
-	//Kj�r levelcontrol loop for updates
+ 
+	//Kjør levelcontrol loop
 	levelControlSeed.loop();
   levelControlGjod.loop();
+
+  //Denne har i hovedsak med skjermen og menyknapper å gjøre
   if (rotationClock.checkpoint()){
     menu.rotate();
     display.printText(0, 0, menu.getText());
@@ -149,8 +157,6 @@ void loop() {
       fieldHolder = myArdu::PolyHolder{};
       fieldHolder = myArdu::read_field(myFile);
       myFile.close();
-      //display.resetState();
-      //display.printInsideStatus(' ');
     }
     display.printText(0, 0, menu.getText()); 
     display.printCheck(menu.getSelected());

@@ -2,6 +2,23 @@
 #ifndef FARM_RELE_CONTROL
 #define FARM_RELE_CONTROL
 
+/*
+  Denne fila inneholder klasse Click, og LevelControl. Dette er koden som faktisk
+  styrer motorne på såmaskinen vår, og som sannsyneligvis må gjøres på en annen
+  måte, om man benytter andre aktuatorer enn oss.
+
+  Click-klassen brukes for å styre et bestemt rele, som er koblet på en spesifikk
+  utgangs-pin. Denne sørger for å simulere et klikk, ved at den lar releet være på
+  i en gitt tidsperiode, og deretter lar det være av i en gitt tidsperiode, 
+  før den kan returnere at klikket er ferdi.
+
+  LevelControl-klassen blir gitt tre pin-verdier, som er for releene, som trykker,
+  opp, ned, og tilbake til 0. Skal man fra positiv til negativ verdi (i forhold til 0),
+  så trykker den først på 0. (På andre oppsett kan det være at man ikke vil lagre verdier
+  rundt 0, men vi valgte å gjøre det slik). LevelControl-klassen bruker Click-klassen,
+  for å justere motorne, med releene. 
+*/
+
 #include <stdint.h>
 
 namespace myArdu {

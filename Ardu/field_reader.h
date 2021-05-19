@@ -2,9 +2,27 @@
 #ifndef FIELD_READER
 #define FIELD_READER
 
+/*
+  Denne fila inneholder det meste av koden som har med polygoner å gjøre.
+
+  Point og Point32 lagrer punkter med henholdsvis 16- og 32 bit, der den siste
+  brukes for å ha en referanse for hele åkeren, mens andre punkter finnes
+  i forhold til dette.
+
+  Klassen PolygonStruct inneholder et polygon, og man kan bruke medlemsfunksjonen
+  point_inside for å sjekke om et punkt er inni polygonet.
+
+  Klassen PolyHolder inneholder alle polygonene på en åker, og man kan bruke
+  medlemsfunksjonen value for å få en verdi til regulering, gitt det punktet
+  man er i.
+
+  Funksjonen read_field leser en fil til minne. Denne fila er da valgt av bruker i
+  menyen.
+*/
+
 #include <stdint.h>
 #include <SD.h>
-#include "light_smarpointer.h"
+#include "light_smartpointer.h"
 
 namespace myArdu {
 
@@ -14,12 +32,13 @@ namespace myArdu {
         uint16_t y;
     };
 
-    //Saving long point
+    //Saving long point (used for reference)
     struct Point32 {
         int32_t x;
         int32_t y;
     };
 
+    //Denne funksjonen brukes i sammenheng med å sjekke om et punkt ligger inni et polygon.
     //Check if horizontal line to the right of point ref, crosses line between to other points
     bool CrossLine(Point& ref, Point p1, Point p2) {
         //Change order if neccecary
@@ -89,7 +108,7 @@ namespace myArdu {
         }
     };
 
-    //Holding all polygons
+    //Holding all polygons from a field
     class PolyHolder {
     private:
         uint8_t add_count = 0;
@@ -128,7 +147,7 @@ namespace myArdu {
     };
 
     //Trenger at referansen er satt slik at vi har bare positive koordinater i punktene
-    //Krever ogs� at punktene kan lagres p� 16 bit
+    //Krever ogs� at punktene kan lagres p� 16 bit
     //Write for arduino
     /*
         - Format for saving file.
@@ -144,7 +163,7 @@ namespace myArdu {
              uint16: y coordinate
     */
 
-    //Needs file to open file first
+    //Reads file with polygondata, to PolyHolder-struct
     PolyHolder read_field(File& myFile) {
         //Get these values first
         uint8_t num_polys;
@@ -189,7 +208,7 @@ namespace myArdu {
 
         //Do a little check if we succeded
         if (myFile.position() != myFile.size()) {
-            Serial.println("Avlesningfeil");
+            //Serial.println("Avlesningfeil");
         }
         return polyHolder;
     }
