@@ -1,5 +1,5 @@
 # FarmerMafia
-Verktøy for å regulere såkorn - og gjødselsmengde på åkeren, ved hjelp av QGIS, Arduino, og GPS, pluss en liten skjerm og noen knapper (skjermen er for å ha en liten meny, og litt info).
+Verktøy for å regulere såkorn - og gjødselsmengde på åkeren, ved hjelp av QGIS, Arduino, og GPS, pluss en liten skjerm og noen knapper (skjermen er for å ha en liten meny, og litt info). Prosjektet er laget for en Vaderstad Rapid maskin, med med tilhørende elektromotorer, som brukes for å regulere såkorn - og gjødselsmengde. Motorene styres i utgangspunktet manuelt ved å trykke på knapper (opp, ned og 0), men vi har automatisert denne prosessen ved å bruke releer. Mye av koden kan nok gjenbrukes om man ønsker å gjøre noe lignende på en annen type såmaskin.
 
 Om det er spørsmål som ikke besvares i dette dokumentet, så er det bare å kontakte via f.eks. mail: mortensvendgaard@gmail.com, eller kontakte
 Morten Svendgård på andre måter (f.eks. Facebook, eller mobil).
